@@ -30,25 +30,7 @@ namespace App.Services
 
             var company = this.companyRepository.GetById(companyId);
             customer.Company = company;
-
-            if (company.Name == "VeryImportantClient")
-            {
-                // Skip credit check
-                customer.HasCreditLimit = false;
-            }
-            else if (company.Name == "ImportantClient")
-            {
-                // Do credit check and double credit limit
-                customer.HasCreditLimit = true;
-                customer.CreditLimit = this.customerCreditService.GetCreditLimit(customer.Firstname, customer.Surname, customer.DateOfBirth);
-                customer.CreditLimit *= 2;
-            }
-            else
-            {
-                // Do credit check
-                customer.HasCreditLimit = true;
-                customer.CreditLimit = this.customerCreditService.GetCreditLimit(customer.Firstname, customer.Surname, customer.DateOfBirth);
-            }
+            this.SetCustomerCreditLimit(customer, company);
 
             if (customer.HasCreditLimit && customer.CreditLimit < 500)
             {
@@ -91,6 +73,28 @@ namespace App.Services
             }
 
             return true;
+        }
+
+        private void SetCustomerCreditLimit(Customer customer, Company company)
+        {
+            if (company.Name == "VeryImportantClient")
+            {
+                // Skip credit check
+                customer.HasCreditLimit = false;
+            }
+            else if (company.Name == "ImportantClient")
+            {
+                // Do credit check and double credit limit
+                customer.HasCreditLimit = true;
+                customer.CreditLimit = this.customerCreditService.GetCreditLimit(customer.Firstname, customer.Surname, customer.DateOfBirth);
+                customer.CreditLimit *= 2;
+            }
+            else
+            {
+                // Do credit check
+                customer.HasCreditLimit = true;
+                customer.CreditLimit = this.customerCreditService.GetCreditLimit(customer.Firstname, customer.Surname, customer.DateOfBirth);
+            }
         }
     }
 }
